@@ -1,2 +1,4 @@
-flask
-mysql-conenctor-python
+Flask
+mysql-connector-python
+Flask-Mail
+python-dotenv
