@@ -169,6 +169,28 @@ def insert_record():
 #     db.close()
 
 #     return jsonify({"message":"Updated"})
+@app.route('/get_verified_certificates', methods=['POST'])
+def get_verified_certificates():
+
+    email = request.json['email']
+
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+
+    query = """
+    SELECT certificate_id, verified_at
+    FROM verified_logs
+    WHERE username=%s
+    ORDER BY id DESC
+    """
+
+    cursor.execute(query,(email,))
+    results = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return jsonify(results)
 @app.route('/generate_certificate', methods=['POST'])
 def generate_certificate():
 
