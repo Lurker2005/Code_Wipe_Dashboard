@@ -196,7 +196,36 @@ def count_certificate_yes():
     db.close()
 
     return jsonify(result)
+@app.route('/latest_wipe', methods=['POST'])
+def latest_wipe():
 
+    email = request.json['email']
+
+    db = get_db()
+    cursor = db.cursor(dictionary=True)
+
+    query = """
+    SELECT Disk, Algorithm, Certificategenrated
+    FROM wipetable
+    WHERE email=%s
+    ORDER BY id DESC
+    LIMIT 1
+    """
+
+    cursor.execute(query,(email,))
+    result = cursor.fetchone()
+
+    cursor.close()
+    db.close()
+
+    if result:
+        return jsonify(result)
+    else:
+        return jsonify({
+            "Disk":"None",
+            "Algorithm":"None",
+            "Certificategenrated":"No"
+        })
 
 # ----------------------------------
 # 4️⃣ Count Records by Email
