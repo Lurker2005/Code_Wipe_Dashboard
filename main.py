@@ -149,6 +149,26 @@ def insert_record():
 # ----------------------------------
 # 2️⃣ Update Certificate = Yes
 # ----------------------------------
+# @app.route('/generate_certificate', methods=['POST'])
+# def generate_certificate():
+
+#     email = request.json['email']
+
+#     db = get_db()
+#     cursor = db.cursor(dictionary=True)
+
+#     query = """
+#     UPDATE wipetable
+#     SET Certificategenrated='Yes'
+#     WHERE email=%s
+#     """
+
+#     cursor.execute(query,(email,))
+
+#     cursor.close()
+#     db.close()
+
+#     return jsonify({"message":"Updated"})
 @app.route('/generate_certificate', methods=['POST'])
 def generate_certificate():
 
@@ -160,7 +180,15 @@ def generate_certificate():
     query = """
     UPDATE wipetable
     SET Certificategenrated='Yes'
-    WHERE email=%s
+    WHERE id = (
+        SELECT id FROM (
+            SELECT id
+            FROM wipetable
+            WHERE email=%s
+            ORDER BY id DESC
+            LIMIT 1
+        ) as latest
+    )
     """
 
     cursor.execute(query,(email,))
@@ -168,8 +196,7 @@ def generate_certificate():
     cursor.close()
     db.close()
 
-    return jsonify({"message":"Updated"})
-
+    return jsonify({"message":"Latest certificate updated"})
 
 # ----------------------------------
 # 3️⃣ Count Certificate Yes
@@ -208,7 +235,6 @@ def latest_wipe():
     SELECT Disk, Algorithm, Certificategenrated
     FROM wipetable
     WHERE email=%s
-    ORDER BY id DESC
     LIMIT 1
     """
 
